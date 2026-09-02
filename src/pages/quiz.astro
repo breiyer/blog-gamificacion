@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 // Banco de preguntas — cada una derivada del contenido del blog (fuentes citadas en las entradas).
+// En cada partida se seleccionan y ordenan aleatoriamente, y también se barajan las opciones.
 const preguntas = [
   {
     q: 'Según Deterding et al. (2011), la gamificación es…',
@@ -70,6 +71,84 @@ const preguntas = [
     correcta: 2,
     explica: 'Batlle (2016) observó que demasiados componentes en una sesión corta habrían sobrecargado la secuencia: el equilibrio es clave.',
   },
+  {
+    q: '¿Cuál de las siguientes es una DINÁMICA del juego?',
+    opciones: ['La narrativa', 'Las insignias', 'Los puntos', 'Las tablas de clasificación'],
+    correcta: 0,
+    explica: 'La narrativa es una dinámica (junto con emociones, progreso, relaciones y restricciones). Insignias, puntos y tablas son componentes (Batlle, 2016).',
+  },
+  {
+    q: '¿Cuál de estas NO es una mecánica según Batlle (2016)?',
+    opciones: ['La competición', 'La cooperación', 'La retroalimentación', 'Las insignias'],
+    correcta: 3,
+    explica: 'Las insignias son un componente, no una mecánica. Competición, cooperación y retroalimentación sí son mecánicas (Batlle, 2016).',
+  },
+  {
+    q: 'En el aprendizaje basado en problemas (ABP), el rol del docente…',
+    opciones: [
+      'Sigue siendo el de transmisor único del conocimiento',
+      'Pasa a ser coordinador o tutor del proceso',
+      'Desaparece por completo',
+      'Se limita a calificar exámenes',
+    ],
+    correcta: 1,
+    explica: 'Boude & Ruiz (2009): el estudiante se vuelve el centro y el profesor pasa de protagonista a coordinador del proceso.',
+  },
+  {
+    q: 'Según Boude & Ruiz (2009), ¿qué favoreció los mejores niveles de competencia en los estudiantes?',
+    opciones: [
+      'Trabajar de forma aislada, sin comunicarse',
+      'Asumir un rol protagónico e intercambiar saberes con los pares',
+      'Memorizar sin comprender',
+      'Depender solo del material entregado',
+    ],
+    correcta: 1,
+    explica: 'Boude & Ruiz (2009): quienes asumieron el rol protagónico e intercambiaron saberes con sus pares alcanzaron los niveles más altos.',
+  },
+  {
+    q: 'Desde el conectivismo (Sobrino Morrás, 2014), la gamificación se entiende como…',
+    opciones: [
+      'Una simple actividad recreativa sin fin educativo',
+      'Una herramienta de formación y motivación propia de la web 2.0',
+      'Un método para eliminar la tecnología del aula',
+      'Una teoría del aprendizaje ya superada',
+    ],
+    correcta: 1,
+    explica: 'Sobrino Morrás (2014): el juego deja de ser meramente recreativo y se vuelve herramienta de formación y motivación en situaciones educativas.',
+  },
+  {
+    q: 'Según Muñoz Rojas (2016), la gamificación educativa aparece, junto a los MOOC y otras, como…',
+    opciones: [
+      'Una moda sin relación con la tecnología',
+      'Una tecnología educativa emergente',
+      'Un recurso exclusivo del siglo XX',
+      'Una alternativa a la evaluación formativa',
+    ],
+    correcta: 1,
+    explica: 'Muñoz Rojas (2016) ubica los juegos y la gamificación educativa entre las tecnologías emergentes (reporte NMC Horizons).',
+  },
+  {
+    q: 'En la enseñanza de la programación, ¿por qué ayuda "esconder" el código tras un reto con narrativa?',
+    opciones: [
+      'Porque así los estudiantes no aprenden a programar',
+      'Porque reduce el rechazo y aumenta la motivación al practicar sin sentirlo tedioso',
+      'Porque evita usar estructuras de control',
+      'Porque elimina la necesidad de evaluación',
+    ],
+    correcta: 1,
+    explica: 'Pisabarro & Marrón (2018): ocultar la programación tras el juego mantiene la práctica (p. ej. bucles) sin la resistencia habitual.',
+  },
+  {
+    q: 'Un "juego serio", según Pisabarro & Marrón (2018), es aquel cuyo objetivo principal es…',
+    opciones: [
+      'El entretenimiento por encima de todo',
+      'La educación, apoyándose en el aprendizaje activo y basado en problemas',
+      'Ganar dinero',
+      'Competir sin aprender',
+    ],
+    correcta: 1,
+    explica: 'Pisabarro & Marrón (2018): el juego serio tiene como objetivo principal la educación; el aprendizaje es más efectivo cuando es activo, experimental y basado en problemas.',
+  },
 ];
 ---
 
@@ -79,7 +158,8 @@ const preguntas = [
     <h1 style="margin-top:8px">🕹️ Quiz gamificado</h1>
     <p style="color:var(--text-dim)">
       Aquí la teoría se vuelve juego. Responde, gana <strong>puntos</strong>, sube de <strong>nivel</strong> y
-      desbloquea tu <strong>insignia</strong>. Es la propia gamificación aplicada a este blog.
+      desbloquea tu <strong>insignia</strong>. Las preguntas y sus opciones son <strong>aleatorias</strong>:
+      cada intento es distinto. Es la propia gamificación aplicada a este blog.
     </p>
 
     <div id="quiz-app" class="quiz" data-preguntas={JSON.stringify(preguntas)}>
@@ -154,7 +234,10 @@ const preguntas = [
 
 <script>
   const app = document.getElementById('quiz-app');
-  const preguntas = JSON.parse(app.dataset.preguntas);
+  const BANCO = JSON.parse(app.dataset.preguntas);
+
+  // Número de preguntas por partida (si el banco tiene menos, se usan todas).
+  const PREGUNTAS_POR_PARTIDA = 8;
 
   const el = {
     score: document.getElementById('score'),
@@ -175,9 +258,35 @@ const preguntas = [
     retry: document.getElementById('quiz-retry'),
   };
 
+  let preguntas = [];      // preguntas de la partida actual (ya barajadas)
   let idx = 0, score = 0, streak = 0, answered = false;
 
-  el.qtotal.textContent = preguntas.length;
+  // Baraja un arreglo (Fisher–Yates) devolviendo una copia.
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Prepara una nueva partida: elige N preguntas al azar y baraja sus opciones,
+  // guardando el TEXTO de la respuesta correcta (no el índice fijo).
+  function nuevaPartida() {
+    const n = Math.min(PREGUNTAS_POR_PARTIDA, BANCO.length);
+    preguntas = shuffle(BANCO).slice(0, n).map((p) => {
+      const textoCorrecto = p.opciones[p.correcta];
+      const opciones = shuffle(p.opciones);
+      return {
+        q: p.q,
+        opciones,
+        explica: p.explica,
+        correctaIdx: opciones.indexOf(textoCorrecto),
+      };
+    });
+    el.qtotal.textContent = preguntas.length;
+  }
 
   function render() {
     answered = false;
@@ -205,9 +314,9 @@ const preguntas = [
     const botones = [...el.options.children];
     botones.forEach((b, j) => {
       b.disabled = true;
-      if (j === p.correcta) b.classList.add('correct');
+      if (j === p.correctaIdx) b.classList.add('correct');
     });
-    if (i === p.correcta) {
+    if (i === p.correctaIdx) {
       boton.classList.add('correct');
       // Puntos: base 10 + bonus por racha
       streak++;
@@ -257,14 +366,17 @@ const preguntas = [
     el.result.style.display = 'block';
   }
 
-  el.retry.addEventListener('click', () => {
+  function iniciar() {
     idx = 0; score = 0; streak = 0;
     el.score.textContent = '0';
     el.streak.textContent = '0';
     el.result.style.display = 'none';
     el.card.style.display = 'block';
+    nuevaPartida();
     render();
-  });
+  }
 
-  render();
+  el.retry.addEventListener('click', iniciar);
+
+  iniciar();
 </script>
