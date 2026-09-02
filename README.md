@@ -10,7 +10,7 @@ Aborda el **constructo conceptual de la relación entre gamificación y educaci�
 
 ## 🧩 Contenido
 
-- ¿Qué es la gamificación? (Deterding, Werbach & Hunter, Kapp)
+- ¿Qué es la gamificación? (Deterding et al., 2011)
 - Gamificación y educación: el constructo conceptual
 - Los elementos del juego (dinámicas, mecánicas, componentes)
 - Gamificación en la enseñanza de la programación (gincana Harry Potter)
