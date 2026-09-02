@@ -1,0 +1,62 @@
+---
+import '../styles/global.css';
+
+const { title = 'Gamificación en la Enseñanza de la Programación', description = 'Blog académico sobre el constructo conceptual de la relación entre gamificación y educación, aplicado a la enseñanza de la programación.', active = '' } = Astro.props;
+
+const base = import.meta.env.BASE_URL; // "/blog-gamificacion"
+const link = (path) => `${base}${path}`.replace(/\/\//g, '/');
+
+const navItems = [
+  { href: '/', label: 'Inicio', key: 'home' },
+  { href: '/que-es-la-gamificacion/', label: '¿Qué es?', key: 'que-es' },
+  { href: '/gamificacion-y-educacion/', label: 'Gamificación y educación', key: 'constructo' },
+  { href: '/elementos-del-juego/', label: 'Elementos del juego', key: 'elementos' },
+  { href: '/gamificacion-en-programacion/', label: 'En programación', key: 'programacion' },
+  { href: '/quiz/', label: 'Quiz', key: 'quiz' },
+  { href: '/referencias/', label: 'Referencias', key: 'referencias' },
+];
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="author" content="Breiyer — Ing. de Sistemas" />
+    <title>{title}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav" aria-label="Navegación principal">
+        <a class="brand" href={link('/')}>
+          <span class="logo" aria-hidden="true">🎮</span>
+          <span>GamificaCode</span>
+        </a>
+        <div class="nav-links">
+          {navItems.map((item) => (
+            <a href={link(item.href)} class={active === item.key ? 'active' : ''}>{item.label}</a>
+          ))}
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          <strong>GamificaCode</strong> · Blog académico — Electiva Gamificación en Educación ·
+          Maestría en Educación, Corporación Universitaria Iberoamericana.
+        </p>
+        <p style="opacity:.8">
+          Autor: Breiyer (Ing. de Sistemas). Contenido con fines educativos, 2026.
+          <span class="badge-en" style="border:none;padding:0;margin:0;font-size:.9em">“Learning by playing, coding by doing.”</span>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

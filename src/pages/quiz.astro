@@ -1,0 +1,270 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Banco de preguntas — cada una derivada del contenido del blog (fuentes citadas en las entradas).
+const preguntas = [
+  {
+    q: 'Según Deterding et al. (2011), la gamificación es…',
+    opciones: [
+      'Convertir cualquier clase en un videojuego completo',
+      'El uso de elementos de diseño de juegos en contextos ajenos al juego',
+      'Jugar en clase para entretener a los estudiantes',
+      'Un tipo de examen con puntajes',
+    ],
+    correcta: 1,
+    explica: 'Deterding et al. (2011): “the use of game design elements in non-game contexts”. No es crear un juego completo, sino tomar sus elementos.',
+  },
+  {
+    q: 'La definición de Kapp (2012), pensada para la educación, incluye…',
+    opciones: [
+      'Solo puntos y recompensas',
+      'Mecánicas, estética y pensamiento de juego para motivar y promover el aprendizaje',
+      'Únicamente videojuegos comerciales',
+      'Eliminar la evaluación del aula',
+    ],
+    correcta: 1,
+    explica: 'Kapp (2012, p. 10): “using game-based mechanics, aesthetics, and game thinking to engage people, motivate action, promote learning, and solve problems”.',
+  },
+  {
+    q: 'En la jerarquía de Werbach & Hunter, ¿cuál es el nivel MÁS abstracto?',
+    opciones: ['Componentes', 'Mecánicas', 'Dinámicas', 'Puntos'],
+    correcta: 2,
+    explica: 'El orden de más abstracto a más concreto es: Dinámicas → Mecánicas → Componentes (Werbach & Hunter, 2012, en Batlle, 2016).',
+  },
+  {
+    q: '¿Cuál de estos es un COMPONENTE (no una dinámica ni una mecánica)?',
+    opciones: ['La narrativa', 'La competición', 'Las insignias', 'El progreso'],
+    correcta: 2,
+    explica: 'Las insignias son componentes (lo más concreto). La narrativa y el progreso son dinámicas; la competición es una mecánica.',
+  },
+  {
+    q: 'En la gincana de programación de Pisabarro & Marrón (2018), la razón de ambientarla en Harry Potter era…',
+    opciones: [
+      'Cumplir con el currículo de literatura',
+      'Ocultar la programación y darle unidad y coherencia al juego',
+      'Evitar usar computadores',
+      'Reducir el número de estudiantes',
+    ],
+    correcta: 1,
+    explica: 'Pisabarro & Marrón (2018): “La razón principal era ocultar la programación, dejándola en un segundo plano en el juego”.',
+  },
+  {
+    q: 'Según el constructo gamificación–educación, el estudiante pasa a ser…',
+    opciones: [
+      'Un receptor pasivo de información',
+      'El protagonista de su propio aprendizaje',
+      'Un espectador del docente',
+      'Un evaluador de sus compañeros únicamente',
+    ],
+    correcta: 1,
+    explica: 'El estudiante se convierte en el centro/protagonista del proceso; el docente pasa a coordinador o tutor (Boude & Ruiz, 2009).',
+  },
+  {
+    q: 'Una lección de diseño de Batlle (2016) sobre los componentes es que…',
+    opciones: [
+      'Hay que usar los quince componentes siempre',
+      'Cuantos más componentes, mejor',
+      'El exceso de componentes puede sobrecargar y entorpecer la actividad',
+      'Los componentes no importan',
+    ],
+    correcta: 2,
+    explica: 'Batlle (2016) observó que demasiados componentes en una sesión corta habrían sobrecargado la secuencia: el equilibrio es clave.',
+  },
+];
+---
+
+<BaseLayout title="Quiz gamificado · GamificaCode" description="Pon a prueba lo que aprendiste sobre gamificación y gana puntos e insignias." active="quiz">
+  <section class="container" style="padding:40px 20px 80px">
+    <a href={`${import.meta.env.BASE_URL}/`.replace(/\/\//g,'/')} style="color:var(--text-dim);font-size:.9rem">← Volver al inicio</a>
+    <h1 style="margin-top:8px">🕹️ Quiz gamificado</h1>
+    <p style="color:var(--text-dim)">
+      Aquí la teoría se vuelve juego. Responde, gana <strong>puntos</strong>, sube de <strong>nivel</strong> y
+      desbloquea tu <strong>insignia</strong>. Es la propia gamificación aplicada a este blog.
+    </p>
+
+    <div id="quiz-app" class="quiz" data-preguntas={JSON.stringify(preguntas)}>
+      <!-- HUD -->
+      <div class="quiz-hud">
+        <div class="hud-item">⭐ Puntos: <strong id="score">0</strong></div>
+        <div class="hud-item">❓ Pregunta: <strong><span id="qnum">1</span>/<span id="qtotal">0</span></strong></div>
+        <div class="hud-item">🔥 Racha: <strong id="streak">0</strong></div>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+
+      <!-- Tarjeta de pregunta -->
+      <div class="quiz-card" id="quiz-card">
+        <p class="quiz-q" id="quiz-q">Cargando…</p>
+        <div class="quiz-options" id="quiz-options"></div>
+        <p class="quiz-feedback" id="quiz-feedback"></p>
+        <button class="btn" id="quiz-next" style="display:none">Siguiente →</button>
+      </div>
+
+      <!-- Resultado final -->
+      <div class="quiz-result" id="quiz-result" style="display:none">
+        <div class="badge-big" id="badge-emoji">🏅</div>
+        <h2 id="badge-title">¡Completado!</h2>
+        <p id="result-text"></p>
+        <p class="result-en" id="result-en"></p>
+        <button class="btn secondary" id="quiz-retry">🔄 Reintentar</button>
+      </div>
+
+      <noscript>
+        <div class="callout info">Este quiz necesita JavaScript activado para funcionar.</div>
+      </noscript>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .quiz { margin-top: 26px; }
+  .quiz-hud {
+    display: flex; gap: 14px; flex-wrap: wrap; justify-content: space-between;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 18px; font-weight: 600;
+  }
+  .hud-item { color: var(--text-dim); }
+  .hud-item strong { color: var(--text); }
+  .progress { height: 10px; background: var(--card); border-radius: 999px; margin: 14px 0 22px; overflow: hidden; border: 1px solid var(--border); }
+  .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width .4s ease; }
+
+  .quiz-card { background: linear-gradient(180deg, var(--card), var(--bg-soft)); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow); }
+  .quiz-q { font-size: 1.25rem; font-weight: 700; margin: 0 0 18px; }
+  .quiz-options { display: grid; gap: 12px; }
+  /* Estilos globales de las opciones de respuesta */
+  :global(.opt) {
+    text-align: left; padding: 14px 16px; border-radius: 12px; cursor: pointer;
+    background: var(--card-2); border: 1px solid var(--border); color: var(--text);
+    font-size: 1rem; font-weight: 600; font-family: inherit;
+    transition: transform .12s ease, border-color .12s ease;
+    width: 100%;
+  }
+  :global(.opt:hover:not(:disabled)) { transform: translateX(4px); border-color: var(--primary); }
+  :global(.opt:disabled) { cursor: default; opacity: .95; }
+  :global(.opt.correct) { background: linear-gradient(135deg, #00b894, #55efc4); color: #05261f; border-color: #00b894; }
+  :global(.opt.wrong) { background: linear-gradient(135deg, #d63031, #ff7675); color: #fff; border-color: #d63031; }
+  .quiz-feedback { margin: 16px 0 0; font-weight: 600; min-height: 1.2em; }
+  .quiz-feedback.ok { color: #55efc4; }
+  .quiz-feedback.no { color: #ff7675; }
+
+  .quiz-result { text-align: center; background: linear-gradient(180deg, var(--card), var(--bg-soft)); border: 1px solid var(--border); border-radius: var(--radius); padding: 40px 26px; box-shadow: var(--shadow); }
+  .badge-big { font-size: 4rem; animation: pop .5s ease; }
+  .result-en { color: var(--gold); font-style: italic; }
+  @keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+</style>
+
+<script>
+  const app = document.getElementById('quiz-app');
+  const preguntas = JSON.parse(app.dataset.preguntas);
+
+  const el = {
+    score: document.getElementById('score'),
+    qnum: document.getElementById('qnum'),
+    qtotal: document.getElementById('qtotal'),
+    streak: document.getElementById('streak'),
+    bar: document.getElementById('progress-bar'),
+    card: document.getElementById('quiz-card'),
+    q: document.getElementById('quiz-q'),
+    options: document.getElementById('quiz-options'),
+    feedback: document.getElementById('quiz-feedback'),
+    next: document.getElementById('quiz-next'),
+    result: document.getElementById('quiz-result'),
+    badgeEmoji: document.getElementById('badge-emoji'),
+    badgeTitle: document.getElementById('badge-title'),
+    resultText: document.getElementById('result-text'),
+    resultEn: document.getElementById('result-en'),
+    retry: document.getElementById('quiz-retry'),
+  };
+
+  let idx = 0, score = 0, streak = 0, answered = false;
+
+  el.qtotal.textContent = preguntas.length;
+
+  function render() {
+    answered = false;
+    const p = preguntas[idx];
+    el.qnum.textContent = idx + 1;
+    el.q.textContent = p.q;
+    el.feedback.textContent = '';
+    el.feedback.className = 'quiz-feedback';
+    el.next.style.display = 'none';
+    el.options.innerHTML = '';
+    p.opciones.forEach((texto, i) => {
+      const b = document.createElement('button');
+      b.className = 'opt';
+      b.textContent = texto;
+      b.addEventListener('click', () => elegir(i, b));
+      el.options.appendChild(b);
+    });
+    el.bar.style.width = (idx / preguntas.length) * 100 + '%';
+  }
+
+  function elegir(i, boton) {
+    if (answered) return;
+    answered = true;
+    const p = preguntas[idx];
+    const botones = [...el.options.children];
+    botones.forEach((b, j) => {
+      b.disabled = true;
+      if (j === p.correcta) b.classList.add('correct');
+    });
+    if (i === p.correcta) {
+      boton.classList.add('correct');
+      // Puntos: base 10 + bonus por racha
+      streak++;
+      const ganado = 10 + (streak - 1) * 2;
+      score += ganado;
+      el.feedback.textContent = `✅ ¡Correcto! +${ganado} pts. ${p.explica}`;
+      el.feedback.className = 'quiz-feedback ok';
+    } else {
+      boton.classList.add('wrong');
+      streak = 0;
+      el.feedback.textContent = `❌ Casi. ${p.explica}`;
+      el.feedback.className = 'quiz-feedback no';
+    }
+    el.score.textContent = score;
+    el.streak.textContent = streak;
+    el.next.style.display = 'inline-flex';
+    el.next.textContent = idx + 1 < preguntas.length ? 'Siguiente →' : 'Ver resultado 🏁';
+  }
+
+  el.next.addEventListener('click', () => {
+    idx++;
+    if (idx < preguntas.length) {
+      render();
+    } else {
+      mostrarResultado();
+    }
+  });
+
+  function insignia(pct) {
+    if (pct === 100) return { emoji: '🏆', title: 'Insignia de Oro — ¡Game Master!', en: '“Flawless victory! You mastered gamification.”' };
+    if (pct >= 70) return { emoji: '🥈', title: 'Insignia de Plata — ¡Nivel Pro!', en: '“Great run! You leveled up your knowledge.”' };
+    if (pct >= 40) return { emoji: '🥉', title: 'Insignia de Bronce — ¡Aprendiz avanzado!', en: '“Good job! Keep playing to level up.”' };
+    return { emoji: '🎮', title: 'Insignia de Jugador — ¡Sigue intentándolo!', en: '“Every master was once a beginner. Try again!”' };
+  }
+
+  function mostrarResultado() {
+    el.bar.style.width = '100%';
+    el.card.style.display = 'none';
+    const maxPts = preguntas.reduce((acc, _p, i) => acc + 10 + i * 2, 0); // máximo teórico con racha perfecta
+    const pct = Math.round((score / maxPts) * 100);
+    const b = insignia(pct);
+    el.badgeEmoji.textContent = b.emoji;
+    el.badgeTitle.textContent = b.title;
+    el.resultText.innerHTML = `Obtuviste <strong>${score}</strong> puntos (${pct}% del máximo). ` +
+      `Respondiste ${preguntas.length} preguntas sobre gamificación y educación.`;
+    el.resultEn.textContent = b.en;
+    el.result.style.display = 'block';
+  }
+
+  el.retry.addEventListener('click', () => {
+    idx = 0; score = 0; streak = 0;
+    el.score.textContent = '0';
+    el.streak.textContent = '0';
+    el.result.style.display = 'none';
+    el.card.style.display = 'block';
+    render();
+  });
+
+  render();
+</script>

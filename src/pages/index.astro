@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+const link = (path) => `${base}${path}`.replace(/\/\//g, '/');
+
+const secciones = [
+  { icon: '🎯', title: '¿Qué es la gamificación?', desc: 'Definiciones de Deterding, Werbach & Hunter y Kapp. El punto de partida conceptual.', href: '/que-es-la-gamificacion/' },
+  { icon: '🧩', title: 'Gamificación y educación', desc: 'El constructo conceptual: cómo se relacionan el juego, las TIC y el aprendizaje.', href: '/gamificacion-y-educacion/' },
+  { icon: '🏗️', title: 'Elementos del juego', desc: 'Dinámicas, mecánicas y componentes: la pirámide de Werbach & Hunter.', href: '/elementos-del-juego/' },
+  { icon: '💻', title: 'Gamificación en programación', desc: 'Cómo motivar el aprendizaje del código: el caso de la gincana Harry Potter.', href: '/gamificacion-en-programacion/' },
+  { icon: '🕹️', title: 'Quiz gamificado', desc: 'Pon a prueba lo aprendido: gana puntos e insignias en este reto interactivo.', href: '/quiz/' },
+  { icon: '📚', title: 'Referencias', desc: 'Fuentes académicas en formato APA que sustentan este blog.', href: '/referencias/' },
+];
+---
+
+<BaseLayout active="home">
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow">Electiva · Gamificación en Educación</span>
+      <h1>Gamificación en la enseñanza de la programación</h1>
+      <p class="lead">
+        Un recorrido visual e interactivo por el <strong>constructo conceptual</strong> que relaciona
+        la gamificación con la educación, aplicado a un reto real: enseñar a programar sin que se sienta como estudiar.
+      </p>
+      <p class="badge-en">“Gamification is not about making learning a game — it's about making learning as engaging as one.”</p>
+      <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a class="btn" href={link('/que-es-la-gamificacion/')}>Empezar a leer 🚀</a>
+        <a class="btn secondary" href={link('/quiz/')}>Jugar el quiz 🕹️</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container" style="padding:10px 20px 20px">
+    <figure class="figure">
+      <div class="hero-banner" role="img" aria-label="Terminal gamificada: aprender jugando">
+        <div class="term-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="term-title">gamificacode — bienvenida</span>
+        </div>
+        <div class="term-body">
+          <p><span class="prompt">$</span> <span class="typed">iniciar_aprendizaje --modo=juego</span></p>
+          <p class="term-out">🎮 Cargando experiencia gamificada…</p>
+          <p class="term-out">⭐ Puntos, 🏅 insignias y 🔺 niveles activados.</p>
+          <p class="term-out ok">✓ Listo: el aprendizaje ahora se siente como jugar.</p>
+          <p><span class="prompt">$</span> <span class="cursor">▋</span></p>
+        </div>
+      </div>
+      <figcaption>Este blog aplica la gamificación que explica: recórrelo como un juego y pruébalo en el quiz.</figcaption>
+    </figure>
+  </section>
+
+  <section class="container" style="padding:20px 20px 40px">
+    <h2 style="text-align:center;margin-bottom:6px">Mapa del blog</h2>
+    <p style="text-align:center;color:var(--text-dim);margin-top:0">Cada tarjeta es una parada del recorrido. Sigue el orden o explora a tu ritmo.</p>
+    <div class="grid cols-3" style="margin-top:24px">
+      {secciones.map((s) => (
+        <div class="card">
+          <div class="icon" aria-hidden="true">{s.icon}</div>
+          <h3>{s.title}</h3>
+          <p>{s.desc}</p>
+          <a class="card-link" href={link(s.href)}>Explorar →</a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="container" style="padding:0 20px 40px">
+    <div class="callout info">
+      <div class="callout-title">👋 ¿Cómo participar?</div>
+      Este blog es un espacio abierto de la comunidad educativa. Tu <strong>visita ya cuenta</strong> como participación
+      (queda registrada), y si quieres, deja tu comentario más abajo o comparte el enlace con otros colegas y estudiantes.
+    </div>
+  </section>
+
+  <section class="container" id="comentarios" style="padding:0 20px 70px">
+    <h2 style="margin-bottom:6px">💬 Comentarios</h2>
+    <p style="color:var(--text-dim);margin-top:0">
+      Deja tu comentario o reacción. Los comentarios se gestionan con Giscus (a través de GitHub Discussions).
+    </p>
+    <div class="comments-box">
+      <script src="https://giscus.app/client.js"
+        data-repo="breiyer/blog-gamificacion"
+        data-repo-id="R_kgDOUMMmcQ"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOUMMmcc4DEvbm"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="dark_dimmed"
+        data-lang="es"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Banner de bienvenida tipo terminal */
+  .hero-banner {
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, #0b0e22, #12152e);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .term-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px;
+    background: #171a35;
+    border-bottom: 1px solid var(--border);
+  }
+  .term-bar .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .term-bar .red { background: #ff5f56; }
+  .term-bar .yellow { background: #ffbd2e; }
+  .term-bar .green { background: #27c93f; }
+  .term-title { margin-left: 10px; color: var(--text-dim); font-size: .85rem; font-family: monospace; }
+  .term-body { padding: 22px; font-family: "Consolas", "Courier New", monospace; font-size: 1rem; line-height: 1.9; }
+  .term-body p { margin: 0; color: #dfe3ff; }
+  .term-body .prompt { color: var(--accent); font-weight: 700; }
+  .term-body .typed { color: var(--primary-2); }
+  .term-body .term-out { color: var(--text-dim); }
+  .term-body .term-out.ok { color: #55efc4; }
+  .term-body .cursor { animation: blink 1s steps(1) infinite; color: var(--accent); }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .comments-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }

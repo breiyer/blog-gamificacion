@@ -1,0 +1,71 @@
+﻿---
+import PostLayout from '../layouts/PostLayout.astro';
+const prev = { href: '/', label: 'Inicio' };
+const next = { href: '/gamificacion-y-educacion/', label: 'GamificaciÃ³n y educaciÃ³n' };
+---
+
+<PostLayout
+  title="Â¿QuÃ© es la gamificaciÃ³n?"
+  description="Definiciones de gamificaciÃ³n segÃºn Deterding et al. (2011), Werbach & Hunter (2012) y Kapp (2012)."
+  active="que-es"
+  lectura="5 min"
+  prev={prev}
+  next={next}
+>
+  <div class="chips">
+    <span class="chip">ðŸŽ¯ Concepto</span>
+    <span class="chip">ðŸ“– 3 definiciones clave</span>
+    <span class="chip">ðŸŒ Origen</span>
+  </div>
+
+  <p>
+    La gamificaciÃ³n es una de las tendencias educativas mÃ¡s comentadas del siglo XXI, pero conviene partir de una
+    definiciÃ³n precisa antes de llevarla al aula. En su forma mÃ¡s citada, la gamificaciÃ³n se define como
+    <strong>el uso de elementos de diseÃ±o de juegos en contextos ajenos al juego</strong>. Esta definiciÃ³n, breve y
+    poderosa, marca una idea central: no se trata de convertir todo en un videojuego, sino de tomar prestado aquello
+    que hace atractivos a los juegos para aplicarlo a otras actividades, como aprender.
+  </p>
+
+  <blockquote>
+    â€œThe use of game design elements in non-game contexts.â€ â€” Deterding et al. (2011)
+  </blockquote>
+
+  <p>
+    Desde el mundo empresarial, Kevin Werbach y Dan Hunter popularizaron el tÃ©rmino y lo definieron como el uso de
+    elementos y tÃ©cnicas de diseÃ±o de juegos para motivar a las personas. Su aporte mÃ¡s Ãºtil para el aula no es solo la
+    definiciÃ³n, sino la idea de que la gamificaciÃ³n es una <em>estrategia</em> en la que el juego importa, pero no es el
+    fin: el objetivo real es otro (aprender, colaborar, resolver un problema), y las actividades solo tienen apariencia
+    de juego.
+  </p>
+
+  <h2>Una definiciÃ³n pensada para la educaciÃ³n</h2>
+
+  <p>
+    Cuando el foco es el aprendizaje, la definiciÃ³n mÃ¡s pertinente es la de Karl Kapp: gamificar es
+    <strong>usar mecÃ¡nicas, estÃ©tica y pensamiento propios del juego para involucrar a las personas, motivar la acciÃ³n,
+    promover el aprendizaje y resolver problemas</strong>. A diferencia de la definiciÃ³n de Deterding â€”centrada en los
+    videojuegos y en cualquier contextoâ€”, la de Kapp abarca todos los juegos y explica <em>para quÃ©</em> se gamifica en
+    un entorno formativo: para enganchar y para que algo se aprenda.
+  </p>
+
+  <div class="callout en">
+    <div class="callout-title">ðŸ‡¬ðŸ‡§ Key idea</div>
+    â€œGamification is using game-based mechanics, aesthetics, and game thinking to engage people, motivate action,
+    promote learning, and solve problems.â€ (Kapp, 2012)
+  </div>
+
+  <h2>Â¿De dÃ³nde viene?</h2>
+
+  <p>
+    La gamificaciÃ³n no naciÃ³ en la escuela: surgiÃ³ en el Ã¡mbito empresarial y, en particular, en el marketing, y poco a
+    poco se trasladÃ³ a otros campos como la educaciÃ³n y la enseÃ±anza de lenguas. Aunque el tÃ©rmino es reciente, la
+    intuiciÃ³n que lo sostiene es muy antigua: ya los filÃ³sofos griegos destacaban el valor del juego en la formaciÃ³n, y
+    los niÃ±os aprenden sus primeros conceptos â€”las vocales, los nÃºmerosâ€” jugando. La gamificaciÃ³n del siglo XXI
+    simplemente potencia esa idea con el apoyo de las TIC.
+  </p>
+
+  <div class="callout tip">
+    <div class="callout-title">ðŸ’¡ En una frase</div>
+    Gamificar no es jugar por jugar: es diseÃ±ar experiencias donde el estudiante <em>quiera</em> aprender.
+  </div>
+</PostLayout>

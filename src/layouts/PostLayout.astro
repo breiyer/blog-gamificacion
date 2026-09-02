@@ -1,0 +1,25 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+const { title, description, active, fecha = '2 de septiembre de 2026', lectura = '5 min', prev, next } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const link = (path) => `${base}${path}`.replace(/\/\//g, '/');
+---
+
+<BaseLayout title={`${title} · GamificaCode`} description={description} active={active}>
+  <article class="post">
+    <div class="container">
+      <a href={link('/')} style="color:var(--text-dim);font-size:.9rem">← Volver al inicio</a>
+      <h1>{title}</h1>
+      <p class="meta">Publicado el {fecha} · Lectura ≈ {lectura} · Por Breiyer</p>
+      <div class="post-content">
+        <slot />
+      </div>
+
+      <nav class="post-nav" aria-label="Navegación entre entradas">
+        {prev ? <a class="btn secondary" href={link(prev.href)}>← {prev.label}</a> : <span></span>}
+        {next ? <a class="btn" href={link(next.href)}>{next.label} →</a> : <span></span>}
+      </nav>
+    </div>
+  </article>
+</BaseLayout>

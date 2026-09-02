@@ -1,0 +1,74 @@
+---
+import PostLayout from '../layouts/PostLayout.astro';
+const prev = { href: '/quiz/', label: 'Quiz gamificado' };
+const next = { href: '/', label: 'Volver al inicio' };
+---
+
+<PostLayout
+  title="Referencias"
+  description="Fuentes académicas en formato APA que sustentan este blog sobre gamificación y educación."
+  active="referencias"
+  lectura="3 min"
+  prev={prev}
+  next={next}
+>
+  <div class="chips">
+    <span class="chip">📚 APA</span>
+    <span class="chip">✅ Fuentes verificadas</span>
+  </div>
+
+  <p>
+    Este blog se apoya en fuentes de la bibliografía del curso y en referentes académicos de la gamificación. A
+    continuación, las referencias en formato APA (7.ª edición).
+  </p>
+
+  <h2>Recursos de la unidad</h2>
+  <ul class="post-content">
+    <li>
+      Batlle Rodríguez, J. (2016). Gamificación para el desarrollo de la comunicación intercultural en el aula de
+      Español como Lengua Extranjera. En R. Roig-Vila (Ed.), <em>Tecnología, innovación e investigación en los procesos
+      de enseñanza-aprendizaje</em> (pp. 114-120). Octaedro.
+    </li>
+    <li>
+      Boude Figueredo, O., &amp; Ruiz, M. (2009). TIC y el aprendizaje basado en problemas como agentes significativos
+      en el desarrollo de competencias. <em>Index de Enfermería, 18</em>(1), 18-22.
+      <a href="https://scielo.isciii.es/scielo.php?script=sci_arttext&pid=S1132-12962009000100004" target="_blank" rel="noopener">Enlace</a>
+    </li>
+    <li>
+      Muñoz Rojas, H. A. (2016). Mediaciones tecnológicas: nuevos escenarios de la práctica pedagógica.
+      <em>Praxis &amp; Saber, 7</em>(13), 199-221.
+    </li>
+    <li>
+      Pisabarro Marrón, A. M., &amp; Vivaracho Pascual, C. E. (2018). Gamificación en el aula: gincana de programación.
+      <em>ReVisión, 11</em>(1), 85-93.
+    </li>
+    <li>
+      Sobrino Morrás, Á. (2014). Aportaciones del conectivismo como modelo pedagógico post-constructivista.
+      <em>Propuesta Educativa, 2</em>(42), 39-48.
+    </li>
+  </ul>
+
+  <h2>Referentes de la gamificación</h2>
+  <ul class="post-content">
+    <li>
+      Deterding, S., Dixon, D., Khaled, R., &amp; Nacke, L. (2011). From game design elements to gamefulness: Defining
+      "gamification". En <em>Proceedings of the 15th International Academic MindTrek Conference</em> (pp. 9-15). ACM.
+      <a href="https://doi.org/10.1145/2181037.2181040" target="_blank" rel="noopener">https://doi.org/10.1145/2181037.2181040</a>
+    </li>
+    <li>
+      Kapp, K. M. (2012). <em>The gamification of learning and instruction: Game-based methods and strategies for
+      training and education</em>. Pfeiffer.
+    </li>
+    <li>
+      Werbach, K., &amp; Hunter, D. (2012). <em>For the win: How game thinking can revolutionize your business</em>.
+      Wharton Digital Press.
+    </li>
+  </ul>
+
+  <h2>Sobre el blog como recurso educativo</h2>
+  <ul class="post-content">
+    <li>Blood, R. (2002). <em>The weblog handbook: Practical advice on creating and maintaining your blog</em>. Perseus Publishing.</li>
+    <li>Walker Rettberg, J. (2008). <em>Blogging</em>. Polity Press.</li>
+    <li>Winer, D. (2003). <em>What makes a weblog a weblog?</em> Berkman Center for Internet &amp; Society, Harvard Law School.</li>
+  </ul>
+</PostLayout>
