@@ -1,87 +1,87 @@
-﻿---
+---
 import PostLayout from '../layouts/PostLayout.astro';
 const prev = { href: '/elementos-del-juego/', label: 'Elementos del juego' };
 const next = { href: '/quiz/', label: 'Quiz gamificado' };
 ---
 
 <PostLayout
-  title="GamificaciÃ³n en la enseÃ±anza de la programaciÃ³n"
-  description="CÃ³mo aplicar la gamificaciÃ³n para enseÃ±ar a programar: el caso de la gincana Harry Potter (Pisabarro & MarrÃ³n, 2018)."
+  title="Gamificación en la enseñanza de la programación"
+  description="Cómo aplicar la gamificación para enseñar a programar: el caso de la gincana Harry Potter (Pisabarro & Marrón, 2018)."
   active="programacion"
   lectura="7 min"
   prev={prev}
   next={next}
 >
   <div class="chips">
-    <span class="chip">ðŸ’» Mi Ã¡rea</span>
-    <span class="chip">ðŸ§™ Gincana de cÃ³digo</span>
-    <span class="chip">ðŸ” Estructuras de control</span>
+    <span class="chip">💻 Mi área</span>
+    <span class="chip">🧙 Gincana de código</span>
+    <span class="chip">🔁 Estructuras de control</span>
   </div>
 
   <p>
-    EnseÃ±ar a programar tiene un reto particular: muchos estudiantes llegan con miedo al cÃ³digo y con la idea de que
-    programar es difÃ­cil y aburrido. La gamificaciÃ³n ayuda precisamente ahÃ­, porque permite "esconder" la programaciÃ³n
-    detrÃ¡s de una experiencia atractiva, de modo que el estudiante practique estructuras de control, algoritmos o
-    lÃ³gica sin sentir que estÃ¡ haciendo un ejercicio tedioso. Como docente de informÃ¡tica y desarrollador, veo en la
-    gamificaciÃ³n una forma de acercar el pensamiento computacional a quienes se resisten a Ã©l.
+    Enseñar a programar tiene un reto particular: muchos estudiantes llegan con miedo al código y con la idea de que
+    programar es difícil y aburrido. La gamificación ayuda precisamente ahí, porque permite "esconder" la programación
+    detrás de una experiencia atractiva, de modo que el estudiante practique estructuras de control, algoritmos o
+    lógica sin sentir que está haciendo un ejercicio tedioso. Desde mi experiencia en el desarrollo de software, veo en
+    la gamificación una forma de acercar el pensamiento computacional a quienes se resisten a él.
   </p>
 
-  <h2>Un caso real: la gincana de programaciÃ³n "Harry Potter"</h2>
+  <h2>Un caso real: la gincana de programación "Harry Potter"</h2>
 
   <p>
-    Un ejemplo concreto y bien documentado es la gincana diseÃ±ada por Pisabarro y MarrÃ³n para la asignatura Fundamentos
-    de ProgramaciÃ³n, orientada al aprendizaje de las estructuras de control iterativas. La actividad, ambientada en el
-    universo de Harry Potter y planteada como un torneo entre casas, consistÃ­a en una serie de pruebas de dificultad
-    progresiva que los estudiantes resolvÃ­an programando. La actividad resultÃ³ muy positiva: incrementÃ³ la motivaciÃ³n y
-    mejorÃ³ la participaciÃ³n de los alumnos, que eran justamente los objetivos buscados.
+    Un ejemplo concreto y bien documentado es la gincana diseñada por Pisabarro y Marrón para la asignatura Fundamentos
+    de Programación, orientada al aprendizaje de las estructuras de control iterativas. La actividad, ambientada en el
+    universo de Harry Potter y planteada como un torneo entre casas, consistía en una serie de pruebas de dificultad
+    progresiva que los estudiantes resolvían programando. La actividad resultó muy positiva: incrementó la motivación y
+    mejoró la participación de los alumnos, que eran justamente los objetivos buscados.
   </p>
 
   <p>
-    Cada prueba combinaba un cÃ¡lculo que los estudiantes debÃ­an resolver implementando un programa con estructuras
-    iterativas (cuyo resultado era una clave numÃ©rica) y un test de opciÃ³n mÃºltiple que indicaba dÃ³nde continuar. AsÃ­,
-    el <em>bucle</em> â€”un concepto que en abstracto puede resultar Ã¡ridoâ€” se convertÃ­a en la herramienta para superar un
+    Cada prueba combinaba un cálculo que los estudiantes debían resolver implementando un programa con estructuras
+    iterativas (cuyo resultado era una clave numérica) y un test de opción múltiple que indicaba dónde continuar. Así,
+    el <em>bucle</em> —un concepto que en abstracto puede resultar árido— se convertía en la herramienta para superar un
     reto con sentido narrativo.
   </p>
 
   <h3>Ejemplo: una de las pruebas, resuelta con un bucle</h3>
   <p>
-    Una de las pruebas ("Los dragones") pedÃ­a calcular el producto de los nÃºmeros que son mÃºltiplos de 3 y de 5 a la
-    vez entre 100 y 200. AsÃ­ se verÃ­a la soluciÃ³n en un lenguaje sencillo â€” el corazÃ³n del reto es una estructura
+    Una de las pruebas ("Los dragones") pedía calcular el producto de los números que son múltiplos de 3 y de 5 a la
+    vez entre 100 y 200. Así se vería la solución en un lenguaje sencillo — el corazón del reto es una estructura
     iterativa:
   </p>
 
-  <pre><code>{`# Reto "Los dragones": producto de los mÃºltiplos de 3 y 5 (a la vez)
+  <pre><code>{`# Reto "Los dragones": producto de los múltiplos de 3 y 5 (a la vez)
 # comprendidos entre 100 y 200.
 producto = 1
 for n in range(100, 201):
-    if n % 3 == 0 and n % 5 == 0:   # mÃºltiplo de 15
+    if n % 3 == 0 and n % 5 == 0:   # múltiplo de 15
         producto *= n
-print("Clave numÃ©rica:", producto)`}</code></pre>
+print("Clave numérica:", producto)`}</code></pre>
 
   <div class="callout tip">
-    <div class="callout-title">ðŸŽ¯ Por quÃ© funciona</div>
-    El estudiante no practica "el bucle <code>for</code>" en abstracto: lo usa para <em>ganar</em>. La mecÃ¡nica
-    (desafÃ­o + recompensa) y la dinÃ¡mica (narrativa + progreso) convierten un ejercicio de iteraciÃ³n en una misiÃ³n.
+    <div class="callout-title">🎯 Por qué funciona</div>
+    El estudiante no practica "el bucle <code>for</code>" en abstracto: lo usa para <em>ganar</em>. La mecánica
+    (desafío + recompensa) y la dinámica (narrativa + progreso) convierten un ejercicio de iteración en una misión.
   </div>
 
-  <h2>Del juego serio a la gamificaciÃ³n</h2>
+  <h2>Del juego serio a la gamificación</h2>
   <p>
-    Conviene distinguir: un <strong>juego serio</strong> es aquel cuyo objetivo principal es la educaciÃ³n y no solo el
-    entretenimiento; se apoya en la idea de que el aprendizaje es mÃ¡s efectivo cuando es activo, experimental y basado
-    en problemas. La gamificaciÃ³n, en cambio, no crea un juego completo, sino que toma elementos del juego y los inserta
-    en la clase. En la enseÃ±anza de la programaciÃ³n ambos enfoques se complementan muy bien.
+    Conviene distinguir: un <strong>juego serio</strong> es aquel cuyo objetivo principal es la educación y no solo el
+    entretenimiento; se apoya en la idea de que el aprendizaje es más efectivo cuando es activo, experimental y basado
+    en problemas. La gamificación, en cambio, no crea un juego completo, sino que toma elementos del juego y los inserta
+    en la clase. En la enseñanza de la programación ambos enfoques se complementan muy bien.
   </p>
 
-  <h2>Ventajas y precauciones en el aula de programaciÃ³n</h2>
+  <h2>Ventajas y precauciones en el aula de programación</h2>
   <p>
-    Entre las ventajas: aumenta la motivaciÃ³n, el protagonista es el alumno, permite distintos ritmos, fallar deja de
-    ser algo negativo, hay retroalimentaciÃ³n en tiempo real y se favorece la socializaciÃ³n. Pero tambiÃ©n hay
-    precauciones: el juego puede llevar a focalizarse en ganar mÃ¡s que en aprender, puede tentar a hacer trampas o
-    consumir demasiado tiempo. El diseÃ±o pedagÃ³gico debe cuidar ese equilibrio.
+    Entre las ventajas: aumenta la motivación, el protagonista es el alumno, permite distintos ritmos, fallar deja de
+    ser algo negativo, hay retroalimentación en tiempo real y se favorece la socialización. Pero también hay
+    precauciones: el juego puede llevar a focalizarse en ganar más que en aprender, puede tentar a hacer trampas o
+    consumir demasiado tiempo. El diseño pedagógico debe cuidar ese equilibrio.
   </p>
 
   <div class="callout en">
-    <div class="callout-title">ðŸ‡¬ðŸ‡§ Takeaway for coders</div>
-    â€œHide the syntax behind a quest: when students debug to win, they forget they are studying.â€
+    <div class="callout-title">🇬🇧 Takeaway for coders</div>
+    “Hide the syntax behind a quest: when students debug to win, they forget they are studying.”
   </div>
 </PostLayout>
