@@ -152,22 +152,23 @@ const preguntas = [
 ];
 ---
 
-<BaseLayout title="Quiz gamificado · GamificaCode" description="Pon a prueba lo que aprendiste sobre gamificación y gana puntos e insignias." active="quiz">
+<BaseLayout title="Quiz gamificado · GamificaCode" description="Pon a prueba lo que aprendiste sobre gamificación: gana puntos por aciertos, racha y velocidad, y entra al top 3." active="quiz">
   <section class="container" style="padding:40px 20px 80px">
     <a href={`${import.meta.env.BASE_URL}/`.replace(/\/\//g,'/')} style="color:var(--text-dim);font-size:.9rem">← Volver al inicio</a>
     <h1 style="margin-top:8px">🕹️ Quiz gamificado</h1>
     <p style="color:var(--text-dim)">
-      Aquí la teoría se vuelve juego. Responde, gana <strong>puntos</strong>, sube de <strong>nivel</strong> y
-      desbloquea tu <strong>insignia</strong>. Las preguntas y sus opciones son <strong>aleatorias</strong>:
-      cada intento es distinto. Es la propia gamificación aplicada a este blog.
+      Aquí la teoría se vuelve juego. Ganas <strong>puntos</strong> por acertar, con <strong>bonus por racha</strong>
+      y por <strong>velocidad</strong> de respuesta. Las preguntas y opciones son <strong>aleatorias</strong>: cada
+      intento es distinto. ¡Compite por entrar en el <strong>top 3</strong>!
     </p>
 
     <div id="quiz-app" class="quiz" data-preguntas={JSON.stringify(preguntas)}>
       <!-- HUD -->
       <div class="quiz-hud">
         <div class="hud-item">⭐ Puntos: <strong id="score">0</strong></div>
-        <div class="hud-item">❓ Pregunta: <strong><span id="qnum">1</span>/<span id="qtotal">0</span></strong></div>
+        <div class="hud-item">❓ <strong><span id="qnum">1</span>/<span id="qtotal">0</span></strong></div>
         <div class="hud-item">🔥 Racha: <strong id="streak">0</strong></div>
+        <div class="hud-item">⏱️ <strong id="timer">0.0s</strong></div>
       </div>
       <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
 
@@ -185,7 +186,25 @@ const preguntas = [
         <h2 id="badge-title">¡Completado!</h2>
         <p id="result-text"></p>
         <p class="result-en" id="result-en"></p>
-        <button class="btn secondary" id="quiz-retry">🔄 Reintentar</button>
+
+        <!-- Envío de puntaje -->
+        <div id="submit-box" class="submit-box">
+          <label for="alias" style="font-weight:700">Guarda tu puntaje en el ranking</label>
+          <div class="submit-row">
+            <input id="alias" type="text" maxlength="20" placeholder="Tu alias (máx. 20)" autocomplete="off" />
+            <button class="btn" id="submit-score">Enviar 🏁</button>
+          </div>
+          <p id="submit-msg" class="submit-msg"></p>
+        </div>
+
+        <button class="btn secondary" id="quiz-retry" style="margin-top:8px">🔄 Jugar de nuevo</button>
+      </div>
+
+      <!-- Leaderboard + contador global -->
+      <div class="leaderboard" id="leaderboard">
+        <h3 style="margin:0 0 4px">🏆 Top 3 mejores puntajes</h3>
+        <ol id="lb-list" class="lb-list"><li class="lb-empty">Cargando ranking…</li></ol>
+        <p class="lb-stats" id="lb-stats"></p>
       </div>
 
       <noscript>
@@ -230,20 +249,54 @@ const preguntas = [
   .badge-big { font-size: 4rem; animation: pop .5s ease; }
   .result-en { color: var(--gold); font-style: italic; }
   @keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+  .submit-box { margin: 20px auto 0; max-width: 420px; text-align: left; }
+  .submit-row { display: flex; gap: 8px; margin-top: 8px; }
+  .submit-row input {
+    flex: 1; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card-2); color: var(--text);
+    font-size: 1rem; font-family: inherit;
+  }
+  .submit-msg { margin: 10px 0 0; font-weight: 600; min-height: 1.1em; }
+  .submit-msg.ok { color: #55efc4; }
+  .submit-msg.no { color: #ff7675; }
+
+  .leaderboard {
+    margin-top: 26px; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 24px; box-shadow: var(--shadow);
+  }
+  .lb-list { margin: 8px 0 0; padding-left: 22px; }
+  .lb-list li { padding: 6px 0; font-weight: 600; color: var(--text); }
+  .lb-list .lb-empty { list-style: none; color: var(--text-dim); font-weight: 500; }
+  .lb-list .lb-alias { color: var(--primary-2); }
+  .lb-list .lb-score { color: var(--gold); }
+  .lb-stats { margin: 14px 0 0; color: var(--text-dim); font-size: .9rem; }
 </style>
 
 <script>
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  // --- Configuración Supabase (claves públicas, seguras para el front con RLS) ---
+  const SUPABASE_URL = 'https://hvxgfqaaycleirpafrbl.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2eGdmcWFheWNsZWlycGFmcmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzODM5MTAsImV4cCI6MjEwMzk1OTkxMH0.rjFRWb02g_z8yV2WYtmug2-s29jhpDsefoFediPuXIU';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   const app = document.getElementById('quiz-app');
   const BANCO = JSON.parse(app.dataset.preguntas);
-
-  // Número de preguntas por partida (si el banco tiene menos, se usan todas).
   const PREGUNTAS_POR_PARTIDA = 5;
+
+  // Parámetros de puntaje
+  const PUNTOS_BASE = 10;             // por acierto
+  const BONUS_RACHA = 2;              // por cada acierto consecutivo extra
+  const BONUS_VELOCIDAD_MAX = 10;     // bonus máximo por responder rápido
+  const TIEMPO_LIMITE_BONUS = 10;     // segundos: a partir de aquí, bonus 0
 
   const el = {
     score: document.getElementById('score'),
     qnum: document.getElementById('qnum'),
     qtotal: document.getElementById('qtotal'),
     streak: document.getElementById('streak'),
+    timer: document.getElementById('timer'),
     bar: document.getElementById('progress-bar'),
     card: document.getElementById('quiz-card'),
     q: document.getElementById('quiz-q'),
@@ -256,12 +309,18 @@ const preguntas = [
     resultText: document.getElementById('result-text'),
     resultEn: document.getElementById('result-en'),
     retry: document.getElementById('quiz-retry'),
+    submitBox: document.getElementById('submit-box'),
+    alias: document.getElementById('alias'),
+    submitBtn: document.getElementById('submit-score'),
+    submitMsg: document.getElementById('submit-msg'),
+    lbList: document.getElementById('lb-list'),
+    lbStats: document.getElementById('lb-stats'),
   };
 
-  let preguntas = [];      // preguntas de la partida actual (ya barajadas)
+  let preguntas = [];
   let idx = 0, score = 0, streak = 0, answered = false;
+  let qStart = 0, tickTimer = null, scoreSubmitted = false;
 
-  // Baraja un arreglo (Fisher–Yates) devolviendo una copia.
   function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -271,21 +330,26 @@ const preguntas = [
     return a;
   }
 
-  // Prepara una nueva partida: elige N preguntas al azar y baraja sus opciones,
-  // guardando el TEXTO de la respuesta correcta (no el índice fijo).
   function nuevaPartida() {
     const n = Math.min(PREGUNTAS_POR_PARTIDA, BANCO.length);
     preguntas = shuffle(BANCO).slice(0, n).map((p) => {
       const textoCorrecto = p.opciones[p.correcta];
       const opciones = shuffle(p.opciones);
-      return {
-        q: p.q,
-        opciones,
-        explica: p.explica,
-        correctaIdx: opciones.indexOf(textoCorrecto),
-      };
+      return { q: p.q, opciones, explica: p.explica, correctaIdx: opciones.indexOf(textoCorrecto) };
     });
     el.qtotal.textContent = preguntas.length;
+  }
+
+  function stopTick() { if (tickTimer) { clearInterval(tickTimer); tickTimer = null; } }
+
+  function startTick() {
+    qStart = performance.now();
+    el.timer.textContent = '0.0s';
+    stopTick();
+    tickTimer = setInterval(() => {
+      const s = (performance.now() - qStart) / 1000;
+      el.timer.textContent = s.toFixed(1) + 's';
+    }, 100);
   }
 
   function render() {
@@ -305,24 +369,33 @@ const preguntas = [
       el.options.appendChild(b);
     });
     el.bar.style.width = (idx / preguntas.length) * 100 + '%';
+    startTick();
   }
 
   function elegir(i, boton) {
     if (answered) return;
     answered = true;
+    stopTick();
+    const secs = (performance.now() - qStart) / 1000;
     const p = preguntas[idx];
     const botones = [...el.options.children];
     botones.forEach((b, j) => {
       b.disabled = true;
       if (j === p.correctaIdx) b.classList.add('correct');
     });
+
     if (i === p.correctaIdx) {
       boton.classList.add('correct');
-      // Puntos: base 10 + bonus por racha
       streak++;
-      const ganado = 10 + (streak - 1) * 2;
+      const bonusRacha = (streak - 1) * BONUS_RACHA;
+      // Bonus por velocidad: máximo si respondes al instante, 0 a partir del límite
+      const factor = Math.max(0, 1 - secs / TIEMPO_LIMITE_BONUS);
+      const bonusVel = Math.round(BONUS_VELOCIDAD_MAX * factor);
+      const ganado = PUNTOS_BASE + bonusRacha + bonusVel;
       score += ganado;
-      el.feedback.textContent = `✅ ¡Correcto! +${ganado} pts. ${p.explica}`;
+      el.feedback.textContent = `✅ ¡Correcto! +${ganado} pts (base ${PUNTOS_BASE}` +
+        `${bonusRacha ? ` · racha +${bonusRacha}` : ''}` +
+        `${bonusVel ? ` · velocidad +${bonusVel}` : ''}). ${p.explica}`;
       el.feedback.className = 'quiz-feedback ok';
     } else {
       boton.classList.add('wrong');
@@ -338,38 +411,120 @@ const preguntas = [
 
   el.next.addEventListener('click', () => {
     idx++;
-    if (idx < preguntas.length) {
-      render();
-    } else {
-      mostrarResultado();
-    }
+    if (idx < preguntas.length) render();
+    else mostrarResultado();
   });
 
   function insignia(pct) {
-    if (pct === 100) return { emoji: '🏆', title: 'Insignia de Oro — ¡Game Master!', en: '“Flawless victory! You mastered gamification.”' };
+    if (pct >= 90) return { emoji: '🏆', title: 'Insignia de Oro — ¡Game Master!', en: '“Flawless run! You mastered gamification.”' };
     if (pct >= 70) return { emoji: '🥈', title: 'Insignia de Plata — ¡Nivel Pro!', en: '“Great run! You leveled up your knowledge.”' };
     if (pct >= 40) return { emoji: '🥉', title: 'Insignia de Bronce — ¡Aprendiz avanzado!', en: '“Good job! Keep playing to level up.”' };
     return { emoji: '🎮', title: 'Insignia de Jugador — ¡Sigue intentándolo!', en: '“Every master was once a beginner. Try again!”' };
   }
 
+  // Máximo teórico: por cada pregunta, base + bonus velocidad + bonus racha creciente
+  function maxTeorico() {
+    let total = 0;
+    for (let k = 0; k < preguntas.length; k++) {
+      total += PUNTOS_BASE + BONUS_VELOCIDAD_MAX + k * BONUS_RACHA;
+    }
+    return total;
+  }
+
   function mostrarResultado() {
+    stopTick();
     el.bar.style.width = '100%';
     el.card.style.display = 'none';
-    const maxPts = preguntas.reduce((acc, _p, i) => acc + 10 + i * 2, 0); // máximo teórico con racha perfecta
-    const pct = Math.round((score / maxPts) * 100);
+    const pct = Math.round((score / maxTeorico()) * 100);
     const b = insignia(pct);
     el.badgeEmoji.textContent = b.emoji;
     el.badgeTitle.textContent = b.title;
-    el.resultText.innerHTML = `Obtuviste <strong>${score}</strong> puntos (${pct}% del máximo). ` +
+    el.resultText.innerHTML = `Obtuviste <strong>${score}</strong> puntos. ` +
       `Respondiste ${preguntas.length} preguntas sobre gamificación y educación.`;
     el.resultEn.textContent = b.en;
+    // Reiniciar caja de envío
+    scoreSubmitted = false;
+    el.submitBox.style.display = 'block';
+    el.submitMsg.textContent = '';
+    el.submitMsg.className = 'submit-msg';
+    el.alias.value = '';
     el.result.style.display = 'block';
+    // Contar la partida completada (global)
+    contarCompletada();
   }
+
+  // ---------- Supabase: leaderboard y contador ----------
+  async function cargarLeaderboard() {
+    try {
+      const { data, error } = await supabase
+        .from('quiz_scores')
+        .select('alias, score')
+        .order('score', { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        el.lbList.innerHTML = '<li class="lb-empty">Aún no hay puntajes. ¡Sé el primero!</li>';
+        return;
+      }
+      const medallas = ['🥇', '🥈', '🥉'];
+      el.lbList.innerHTML = data.map((r, i) =>
+        `<li><span>${medallas[i] || ''}</span> <span class="lb-alias">${escapeHtml(r.alias)}</span> — <span class="lb-score">${r.score} pts</span></li>`
+      ).join('');
+    } catch (e) {
+      el.lbList.innerHTML = '<li class="lb-empty">No se pudo cargar el ranking.</li>';
+    }
+  }
+
+  async function cargarStats() {
+    try {
+      const { data, error } = await supabase.from('quiz_stats').select('completions').eq('id', 1).single();
+      if (error) throw error;
+      if (data) el.lbStats.textContent = `🎯 El quiz se ha completado ${data.completions} ${data.completions === 1 ? 'vez' : 'veces'}.`;
+    } catch (e) { /* silencioso */ }
+  }
+
+  async function contarCompletada() {
+    try { await supabase.rpc('increment_completions'); await cargarStats(); } catch (e) { /* silencioso */ }
+  }
+
+  async function enviarPuntaje() {
+    if (scoreSubmitted) return;
+    const alias = (el.alias.value || '').trim().slice(0, 20);
+    if (alias.length === 0) {
+      el.submitMsg.textContent = 'Escribe un alias para guardar tu puntaje.';
+      el.submitMsg.className = 'submit-msg no';
+      return;
+    }
+    el.submitBtn.disabled = true;
+    el.submitMsg.textContent = 'Enviando…';
+    el.submitMsg.className = 'submit-msg';
+    try {
+      const { error } = await supabase.from('quiz_scores').insert({ alias, score });
+      if (error) throw error;
+      scoreSubmitted = true;
+      el.submitMsg.textContent = '¡Puntaje guardado! 🎉';
+      el.submitMsg.className = 'submit-msg ok';
+      el.submitBox.style.display = 'none';
+      await cargarLeaderboard();
+    } catch (e) {
+      el.submitBtn.disabled = false;
+      el.submitMsg.textContent = 'No se pudo guardar. Inténtalo de nuevo.';
+      el.submitMsg.className = 'submit-msg no';
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  el.submitBtn.addEventListener('click', enviarPuntaje);
+  el.alias.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') enviarPuntaje(); });
 
   function iniciar() {
     idx = 0; score = 0; streak = 0;
     el.score.textContent = '0';
     el.streak.textContent = '0';
+    el.timer.textContent = '0.0s';
     el.result.style.display = 'none';
     el.card.style.display = 'block';
     nuevaPartida();
@@ -378,5 +533,8 @@ const preguntas = [
 
   el.retry.addEventListener('click', iniciar);
 
+  // Arranque
   iniciar();
+  cargarLeaderboard();
+  cargarStats();
 </script>
